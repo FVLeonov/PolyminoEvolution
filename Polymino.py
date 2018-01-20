@@ -40,22 +40,22 @@ class  Polyminoid(QGraphicsItem):
     polyoid = []
     for gen in self.genom:
       # нарисовать ячейку на востоке
-      if i == "e":
+      if gen == "e":
         new_x = new_x + 10
         painter.setPen(QPen(Qt.blue,2,Qt.SolidLine,Qt.RoundCap))
         painter.drawRect(new_x,new_y,10,10)
       # нарисовать ячейку на западе
-      elif i == "w":
+      elif gen == "w":
         new_x = new_x - 10
         painter.setPen(QPen(Qt.green,2,Qt.SolidLine,Qt.RoundCap))
         painter.drawRect(new_x,new_y,10,10)
       # нарисовать ячейку на севере
-      elif i == "n":
+      elif gen == "n":
         painter.setPen(QPen(Qt.yellow,2,Qt.SolidLine,Qt.RoundCap))
         new_y = new_y - 10
         painter.drawRect(new_x,new_y,10,10)
       # нарисовать ячейку на юге
-      elif i == "s":
+      elif gen == "s":
         painter.setPen(QPen(Qt.red,2,Qt.SolidLine,Qt.RoundCap))
         new_y = new_y + 10
         painter.drawRect(new_x,new_y,10,10)
@@ -72,7 +72,7 @@ class  Polyminoid(QGraphicsItem):
     a = random.randint(0,30)
     if a == 0:
         c = None
-        d = random.randint(1,len(self.gen))
+        d = random.randint(1,len(self.genom))
         b = random.randint(0,3)
         if b == 0:
           c = "n"
@@ -82,27 +82,27 @@ class  Polyminoid(QGraphicsItem):
           c = "e"
         elif b == 3:
           c = "w"
-        self.gen.insert(d,c)
+        self.genom.insert(d,c)
   
   #функция скрещевания полиминойда
   def childPoly (self,poly,scene):
     for p in poly:
       #ищет полиминойда на своей клетке с такойже длинной генома как и у себя
-      if p.x == self.x and p.y == self.y and len(p.gen) == len(self.gen)and p != self:
+      if p.x == self.x and p.y == self.y and len(p.genom) == len(self.genom)and p != self:
         x = 10*random.randint(-15,15)
         y = 10*random.randint(-15,15)
         child = Polyminoid(self.x+x,self.y+y,[])
         poly.append(child)
         scene.addItem(child)
         #случайное смешевание генома
-        for g in range(len(self.gen)):
+        for g in range(len(self.genom)):
           a = random.randint(0,1)
           if a == 0:
-            child.gen.append(self.gen[g])
+            child.genom.append(self.genom[g])
           elif a == 1:
-            child.gen.append(p.gen[g])
+            child.genom.append(p.genom[g])
         print("New Child")
-        print(child.gen)
+        print(child.genom)
 
 class MainGameWindow (QMainWindow):
   # настройки визуальной части
@@ -144,7 +144,7 @@ class Time ():
         # исполнение функций каждого полиминойда
         p.move()
         p.mutation()
-        p.newPoly(self.w.polyminoids,self.w.scene)
+        p.childPoly(self.w.polyminoids,self.w.scene)
         if p.die == True:
           print("Poly Die")
           self.w.polyminoids.remove(p)
