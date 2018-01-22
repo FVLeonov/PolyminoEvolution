@@ -36,8 +36,8 @@ class  Polyminoid(QGraphicsItem):
   def paint(self, painter, option, widget):
     new_x = self.x
     new_y = self.y
-    save = 0
-    polyoid = []
+    save = (self.x,self.y)
+    polyStr = []
     for gen in self.genom:
       # нарисовать ячейку на востоке
       if gen == "e":
@@ -59,9 +59,16 @@ class  Polyminoid(QGraphicsItem):
         painter.setPen(QPen(Qt.red,2,Qt.SolidLine,Qt.RoundCap))
         new_y = new_y + 10
         painter.drawRect(new_x,new_y,10,10)
-      polyoid.append((new_x,new_y))
+      #сохранить координаты
+      elif gen == ".":
+        save = (new_x,new_y)
+      #загрузить координаты
+      elif gen == ",":
+        new_y = save[0]
+        new_x = save[1]
+      polyStr.append((new_x,new_y))
       # если полиминойд замкнут сам в себя то он умерает
-      if polyoid.count((new_x,new_y)) > 1:
+      if polyStr.count((new_x,new_y)) > 1:
         painter.setPen(QPen(Qt.red,2,Qt.SolidLine,Qt.RoundCap))
         painter.drawLine(new_x-10,new_y-10,new_x+10,new_y+10)
         painter.drawLine(new_x-10,new_y+10,new_x+10,new_y-10)
@@ -69,19 +76,11 @@ class  Polyminoid(QGraphicsItem):
 
   #функция мутации полиминойда
   def mutation (self):
-    a = random.randint(0,30)
+    genomPices = ["n","s","e","w",".",","]
+    a = random.randint(0,40)
     if a == 0:
-        c = None
+        c = genomPices[random.randint(0,len(genomPices)-1)]
         d = random.randint(1,len(self.genom))
-        b = random.randint(0,3)
-        if b == 0:
-          c = "n"
-        elif b == 1:
-          c = "s"
-        elif b == 2:
-          c = "e"
-        elif b == 3:
-          c = "w"
         self.genom.insert(d,c)
   
   #функция скрещевания полиминойда
@@ -156,7 +155,7 @@ MyWindow = MainGameWindow()
 time = Time(MyWindow)
 timer = QTimer()
 timer.timeout.connect(time.tick)
-timer.start(1000)
+timer.start(100)
 
 MyWindow.show()
 app.exec_()
